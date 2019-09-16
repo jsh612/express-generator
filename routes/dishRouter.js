@@ -125,7 +125,7 @@ dishRouter.route('/:dishId/comments')
         Dishes.findById(req.params.dishId)
             .then((dish) => {
                 if (dish !== null) {
-                    for (let i= (dish.comments.length-1); i<-0; i--) {
+                    for (let i= (dish.comments.length-1); i>=0; i--) {
                         console.log('삭제부분 129line',dish.comments.id(dish.comments[i]._id))
                         dish.comments.id(dish.comments[i]._id).remove();
                     }

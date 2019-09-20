@@ -15,6 +15,7 @@ leaderRoute.route('/')
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'application/json');
                 res.json(leaderes)
+                //res.json("변환하여 전달하고자 하는 데이터")
             }, (err) => next(err))
             .catch(err => next(err))
             //에러는 나중에 한번에 처리하기위해 next로 넘긴다.

@@ -47,8 +47,8 @@ app.use(session({
   store: new FileStore()
 }));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/', indexRouter);// 로그인전 시작 페이지는 접속가능
+app.use('/users', usersRouter);// 로그인 라이터 시작
 
 
 
@@ -61,20 +61,15 @@ function auth(req, res, next) {
   console.log("req.signedCookies", req.signedCookies); */
 
   //epress-session 모듈은 request 메시지에 req.session을 추가시킨다.
-  console.log("req.session 내용보기",req.session)
+  console.log("req.session 내용보기",req.session.user)
 
   if (!req.session.user) {
     /* -위의 if 조건문 설명-
-    만약 요청하는 쿠키(세션이용시 세션)들 중에 user가 없다면.
-    이것은 아직 해당 유저가 권한(like 로그인)을 얻지 못했음을 의미. */
-
+    만약 요청하는 세션들 중에 user가 없다면.
+    이것은 아직 해당 유저가 권한(로그인)을 얻지 못했음을 의미. */
+    console.log("왜안되",req.session.user);
     var err = new Error('You are not authenticated!');
-
-    //WWW-Authenticate 은 권한입증 메소드를 정의한다(동시에 로그인 창띄우는 역활)
-    //다라서 다음은 res 헤더에 권한입증 메소드를 Basic 이라고 정의하는 것이다.
-    //에러는 마지막에 한번에 처리하기위해 일단은 next로 넘긴다.
-    res.setHeader('WWW-Authenticate', 'Basic');
-    err.status = 401;
+    err.status = 403;
     return next(err);
   } 
   else {
@@ -87,7 +82,7 @@ function auth(req, res, next) {
       //이 else 절은 작동할 일이 잆다.
       //하지만, 이걸 작성한 이유는  이 부분에서 한번 에러를 체크하기 위함이다.
       var err = new Error('You are not authenticated!');
-      err.status = 401;
+      err.status = 403;
       return next(err);
     }
   }

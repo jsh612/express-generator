@@ -67,14 +67,15 @@ router.post('/login', (req, res, next) => {
     //2. .toString().split(':') 이유
     //   - Buffer 타입 데이터를 문자열로 만든후에 username 과 password로 분리
     var auth = Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
-    var usertName = auth[0];
+    var username = auth[0];
     var password = auth[1];
     
-    User.findOne({user: username})
+
+    User.findOne({username: username})
     .then((user) => {
       console.log("찾아온 사용자 정보", user);
       if (user === null) {
-        var err = new Error(`User ${usertName} dose not exist`);
+        var err = new Error(`User ${username} dose not exist`);
         err.status = 403;
         return next(err);
       }
@@ -83,7 +84,7 @@ router.post('/login', (req, res, next) => {
         err.status = 403;
         return next(err);
       }
-      else if (user.usertName === username && user.password === password) {
+      else if (user.username === username && user.password === password) {
         //모든 사항 충족시(로그인 요건 완성)
         req.session.user = 'authenticated';
         res.statusCode = 200;
@@ -114,9 +115,10 @@ router.get('/logout', (req, res, next) => {
     //서버쪽에 설정된 session을 지우기 요청
     req.session.destroy();
     //클라이언트 쪽의 쿠키지우기
-    res.clearCookie('session-id')
+    res.clearCookie('session-id');
     //유저를 로그아웃인 루트로 이동시킨다.
     res.redirect('/');
+    console.log("쿠키 삭제됨")
   }
   else {
     var err = new Error('You arer not logged in!!!')

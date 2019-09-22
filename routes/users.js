@@ -116,7 +116,7 @@ router.get('/logout', (req, res, next) => {
     req.session.destroy();
     //클라이언트 쪽의 쿠키지우기
     // res.clearCookie('session-id');// 이렇게 쿠키를 지우려고 한는경우 안지워짐.
-    res.clearCookie('session-id', {httpOnly:true,path:"/"});//이와 옵션을 같이 넣어줘야 제대로 삭제된다.
+    res.clearCookie('session-id', {httpOnly:true,path:"/"});//이와 옵션을 같이 넣어줘야 제대로 삭제된다
     //유저를 로그아웃인 루트로 이동시킨다.
     res.redirect('/');
     

@@ -52,9 +52,9 @@ app.use('/users', usersRouter);// 로그인 라이터 시작
 
 
 
-//미들웨어는 순서데로 실행된다.
-//app.use(express.static(path.join(__dirname, 'public'))); 이 미들웨어 전에 해주어야
-//유저가 서버에 접근하기전에 권한 유무를 확인하여 통제 가는하다.
+// 미들웨어는 순서데로 실행된다.
+// app.use(express.static(path.join(__dirname, 'public'))); 이 미들웨어 전에 해주어야
+// 유저가 서버에 접근하기전에 권한 유무를 확인하여 통제 가는하다.
 function auth(req, res, next) {
 
   /* //req.signedCookies 는 요청한는 쿠키들을 보여준다.
@@ -87,6 +87,7 @@ function auth(req, res, next) {
     }
   }
 }
+
 
 app.use(auth);
 

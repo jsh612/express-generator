@@ -7,6 +7,8 @@ var logger = require('morgan');
 //session 생성, FileStore 는 해당 세션이 영구적으로 저장시킴
 var session = require('express-session');
 var FileStore = require('session-file-store')(session);
+const passport = require('passport');
+const authenticate = require('./authenticate');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -51,8 +53,19 @@ app.use(session({
   store: new FileStore()
 }));
 
+app.use(passport.initialize());//passport 구동
+app.use(passport.session());//session 연결
+//1. users.js의 로그인 포스트에서 로그인시 자동으로 req.user session에 저장 된다.
+//2. the passport authenticate local will automatically add the user property 
+//  to the request message. (users.js의 login post)
+//  So, it'll add req.user and then, the passport session that 
+//  we have done here will automatically serialize that user information and 
+//  then store it in the session. 
+
+
 app.use('/', indexRouter);// 로그인전 시작 페이지는 접속가능
 app.use('/users', usersRouter);// 로그인 라이터 시작
+
 
 
 
@@ -60,37 +73,31 @@ app.use('/users', usersRouter);// 로그인 라이터 시작
 // app.use(express.static(path.join(__dirname, 'public'))); 이 미들웨어 전에 해주어야
 // 유저가 서버에 접근하기전에 권한 유무를 확인하여 통제 가는하다.
 function auth(req, res, next) {
+  if (!req.user) {
+    //passport session 미들웨어에서 자동적으로 req.user를 로드한다 
+    //위의 app.use(passport.intilize() 와 passport.session() 참고)
+    //(req.session.user 라고 쓸필요 없음)
 
-  /* //req.signedCookies 는 요청한는 쿠키들을 보여준다.
-  console.log("req.signedCookies", req.signedCookies); */
-
-  //epress-session 모듈은 request 메시지에 req.session을 추가시킨다.
-  console.log("req.session 내용보기",req.session.user)
-
-  if (!req.session.user) {
     /* -위의 if 조건문 설명-
     만약 요청하는 세션들 중에 user가 없다면.
     이것은 아직 해당 유저가 권한(로그인)을 얻지 못했음을 의미. */
-    console.log("왜안되",req.session.user);
+    console.log("로그인못했을시",req.user);
     var err = new Error('You are not authenticated!');
     err.status = 403;
     return next(err);
   } 
   else {
-    //클라이언트가 이미 세션을 생성했다면
-    //에지 해당 서버에 접근해서 아래에 이어지는 코드 진행
-    if (req.session.user === 'authenticated') {
-      next()
-    } else {
-      //에초에 쿠키 생성시 정확인 권한인증이 된 경우에만 쿠키를 생성하였으므로
-      //이 else 절은 작동할 일이 잆다.
-      //하지만, 이걸 작성한 이유는  이 부분에서 한번 에러를 체크하기 위함이다.
-      var err = new Error('You are not authenticated!');
-      err.status = 403;
-      return next(err);
-    }
+    //클라이언트가 로그인을 생성했다면
+    //해당 서버에 접근해서 아래에 이어지는 코드 진행
+    next();
   }
+  /* if req.user is not present, 
+  then that means that the authentication has not been done correctly so, 
+  that's why you indicate the error. Otherwise, you are authenticated. 
+  If req.user is present, that means the passport has done the authentication and 
+  the req.user user is loaded on to the request message, and so you can just go on further down.  */
 }
+
 
 
 app.use(auth);

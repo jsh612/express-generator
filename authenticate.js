@@ -1,5 +1,10 @@
 //이 파일은 우리가 환경설정한 인증전략을 저장하기위해 사용한다.
 
+//Let's now configure the passport with the new local strategy 
+//and then we will export this from this file because this is going to be a node module
+
+// 이 파일은 노드 모듈을 구성하게 된다. 따라서 이파일이 정삭적으로 export 되지 않을 경우
+// node module이 정상적으로 정의 되지 않아 오류가 발생하겠된다.
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy
 const User = require('./models/user');
@@ -14,6 +19,8 @@ const User = require('./models/user');
 //    The purpose of a verify callback is to find the user 
 //    that possesses a set of credentials.
 //  - http://www.passportjs.org/docs/configure/
+
+//lcoal을 정의하게된다.
 exports.local = passport.use(new LocalStrategy(User.authenticate()))
 
 //1.serialize(직렬화)

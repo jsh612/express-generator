@@ -34,7 +34,7 @@ router.post('/signup', (req, res, next) => {
     res.statusCode = 200;
     res.setHeader('Content-type', 'application/json');
 
-    //등록 성공여부 메시지와, 유저이름을 그냥 보려고 하는 코드임
+    //등록 성공여부 메시지와, 유저이름을 그냥 확인차 보려고 하는 코드임
     res.json({status: 'Registration Successful', user: user});
   }, (err) => next(err))
   .catch((err) => next())
@@ -50,9 +50,10 @@ router.post('/login', (req, res, next) => {
     //만약 요청하는 쿠키(세션이용시 세션)들 중에 user가 없다면.
     //이것은 아직 해당 유저가 권한(like 로그인)을 얻지 못했음을 의미.
     var authHeader = req.headers.authorization;
-  
+    console.log("authHeader", authHeader);
     if (!authHeader) {
       var err = new Error('You are not authenticated!');
+      console.log("여기안에")
   
       //WWW-Authenticate 은 권한입증 메소드를 정의한다
       //따라서 다음은 res 헤더에 권한입증 메소드를 Basic 이라고 정의하는 것이다.
@@ -131,3 +132,8 @@ router.get('/logout', (req, res, next) => {
 
 
 module.exports = router;
+
+
+
+
+

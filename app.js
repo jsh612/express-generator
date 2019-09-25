@@ -3,6 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+
+//session 생성, FileStore 는 해당 세션이 영구적으로 저장시킴
 var session = require('express-session');
 var FileStore = require('session-file-store')(session);
 

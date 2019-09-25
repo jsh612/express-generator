@@ -41,6 +41,8 @@ app.use(express.urlencoded({ extended: false }));
 그 이유는 express-session은 쿠키를 바로 읽거나 쓸 수 있기때문이다. */
 // app.use(cookieParser('12345-67890-09876-54321'));
 
+
+//session을 설정 작성
 app.use(session({
   name: 'session-id',
   secret: '12345-67890-09876-54321',

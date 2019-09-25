@@ -31,10 +31,9 @@ router.post('/signup', (req, res, next) => {
     }
   })
   .then((user) => {
+    //등록 성공여부 메시지와, 유저이름을 그냥 확인차 보려고 하는 코드임
     res.statusCode = 200;
     res.setHeader('Content-type', 'application/json');
-
-    //등록 성공여부 메시지와, 유저이름을 그냥 확인차 보려고 하는 코드임
     res.json({status: 'Registration Successful', user: user});
   }, (err) => next(err))
   .catch((err) => next())
@@ -45,13 +44,15 @@ router.post('/signup', (req, res, next) => {
 
 //로그인 라이터 구성
 router.post('/login', (req, res, next) => {
-  console.log('여기다')
+  console.log("req.session.user::::::", req.session.user)
   if (!req.session.user) {
+    console.log('여기다')
     //만약 요청하는 쿠키(세션이용시 세션)들 중에 user가 없다면.
     //이것은 아직 해당 유저가 권한(like 로그인)을 얻지 못했음을 의미.
     var authHeader = req.headers.authorization;
     console.log("authHeader", authHeader);
     if (!authHeader) {
+      //이 조건문은 왜 필요한지 모르겠다.
       var err = new Error('You are not authenticated!');
       console.log("여기안에")
   
@@ -61,7 +62,6 @@ router.post('/login', (req, res, next) => {
       res.setHeader('WWW-Authenticate', 'Basic');
       err.status = 401;
       return next(err);
-
     }
     // console.log('authHeader 내용: ', authHeader);
 
@@ -91,9 +91,13 @@ router.post('/login', (req, res, next) => {
       }
       else if (user.username === username && user.password === password) {
         //모든 사항 충족시(로그인 요건 완성)
+        console.log('세션1', req.session)
+
+        //req.session => session을 저장하거나 접근할 때 사용한다.
+        //이부분에서 쿠키와 session이 생성이된다.
         req.session.user = 'authenticated';
+        console.log('세션2', req.session)
         res.statusCode = 200;
-        console.log("로그인 세션1111",req.session)
         res.setHeader('Content-Type', 'text/plain');
         res.end('You are authenticated!')
       }

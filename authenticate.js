@@ -20,7 +20,9 @@ const User = require('./models/user');
 //    that possesses a set of credentials.
 //  - http://www.passportjs.org/docs/configure/
 
+
 //lcoal을 정의하게된다.
+// console.log('LocalStrategy:::::::', LocalStrategy);//function Strategy(options, verify){...}
 exports.local = passport.use(new LocalStrategy(User.authenticate()))
 
 //1.serialize(직렬화)

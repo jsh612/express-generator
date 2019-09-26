@@ -19,9 +19,10 @@ router.post('/signup', (req, res, next) => {
 
   //new User() : User 모델을 이용하여 새로운 다큐먼트를 생성
   //register : passport-local-mongoose에 의해 추가된 메소드
+  // console.log("new User::::::",new User({username: req.body.username}))//유저이름과 _id가 있는 객체
   User.register(new User({username: req.body.username}), req.body.password, 
     (err, user) => {
-      console.log('resister 콜백의 user값::::::', user);//username과 salt, hash가 담긴 객체 출력
+      // console.log('resister 콜백의 user값::::::', user);//username과 salt, hash가 담긴 객체 출력
       if (err) {
         //이미 등록된 유저네임인 경우 에러 처리
         res.statusCode = 500;
@@ -29,7 +30,7 @@ router.post('/signup', (req, res, next) => {
         res.json({err: err});
       }
       else {
-        console.log("패스포트인증 출력괎", passport.authenticate('local'));//authenticate 함수 출력
+        // console.log("passport.authenticate() 출력괎", passport.authenticate('local'));//authenticate 함수 출력
 
         //아라와 같은 문법은 passport에서 요구하는 것이다.
         passport.authenticate('local')(req, res, () => {

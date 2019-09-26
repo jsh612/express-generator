@@ -7,8 +7,9 @@ var logger = require('morgan');
 //session 생성, FileStore 는 해당 세션이 영구적으로 저장시킴
 var session = require('express-session');
 var FileStore = require('session-file-store')(session);
+
 const passport = require('passport');
-const authenticate = require('./authenticate');
+const authenticate = require('./authenticate');//authenticate 파일을 실행시킨다.
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -55,7 +56,7 @@ app.use(session({
 
 app.use(passport.initialize());//passport 구동
 app.use(passport.session());//session 연결
-//1. users.js의 로그인 포스트에서 로그인시 자동으로 req.user session에 저장 된다.
+//1. users.js의 로그인 포스트에서 로그인시 자동으로 req.user가 session에 저장 된다.
 //2. the passport authenticate local will automatically add the user property 
 //  to the request message. (users.js의 login post)
 //  So, it'll add req.user and then, the passport session that 

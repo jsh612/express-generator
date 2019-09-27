@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const authenticate = require('../authenticate');
 
 const Dishes = require('../models/dishes');
 
@@ -20,7 +21,9 @@ dishRouter.route('/')
             //에러는 나중에 한번에 처리하기위해 next로 넘긴다.
             //app.js 의 마지막 부분의 error handler에서 처리함.
     })
-    .post((req, res, next) => {
+    //authenticate.verifyUser 미들웨어는 인증을 요구를 적용 한것.
+    .post(authenticate.verifyUser ,(req, res, next) => {
+        console.log('인증확인')
         Dishes.create(req.body)
             .then(dish => {
                 console.log('Dish created', dish);
@@ -30,11 +33,11 @@ dishRouter.route('/')
             }, (err) => next(err))
             .catch(err => next(err))
     })
-    .put((req, res, next) => {
+    .put(authenticate.verifyUser, (req, res, next) => {
         res.statusCode = 403;
         res.end('PUT operation not supported here.');
     })
-    .delete((req, res, next) => {
+    .delete(authenticate.verifyUser, (req, res, next) => {
         Dishes.remove({})
             .then((response) => {
                 res.statusCode = 200;
@@ -54,10 +57,10 @@ dishRouter.route('/:dishId')
                 }, (err) => next(err))
                 .catch(err => next(err))
         })
-        .post((req, res, next) => {
+        .post(authenticate.verifyUser, (req, res, next) => {
             res.end('POST operation not supported on /dishes.');
         })
-        .put((req, res, next) => {
+        .put(authenticate.verifyUser, (req, res, next) => {
             Dishes.findByIdAndUpdate(req.params.dishId, {
                 $set: req.body
             }, {new: true})
@@ -68,7 +71,7 @@ dishRouter.route('/:dishId')
                 }, (err) => next(err))
                 .catch(err => next(err))
         })
-        .delete((req, res, next) => {
+        .delete(authenticate.verifyUser, (req, res, next) => {
             Dishes.findByIdAndRemove(req.params.dishId)
                 .then((response) => {
                     res.statusCode = 200;
@@ -97,7 +100,7 @@ dishRouter.route('/:dishId/comments')
             //에러는 나중에 한번에 처리하기위해 next로 넘긴다.
             //app.js 의 마지막 부분의 error handler에서 처리함.
     })
-    .post((req, res, next) => {
+    .post(authenticate.verifyUser, (req, res, next) => {
         Dishes.findById(req.params.dishId)
             .then(dish => {
                 if (dish !== null) {
@@ -116,12 +119,12 @@ dishRouter.route('/:dishId/comments')
             }, (err) => next(err))
             .catch(err => next(err))
     })
-    .put((req, res, next) => {
+    .put(authenticate.verifyUser, (req, res, next) => {
         res.statusCode = 403;
         res.end('PUT operation not supported here.'
             + req.params.dishId + '/comments');
     })
-    .delete((req, res, next) => {
+    .delete(authenticate.verifyUser, (req, res, next) => {
         Dishes.findById(req.params.dishId)
             .then((dish) => {
                 if (dish !== null) {
@@ -165,11 +168,11 @@ dishRouter.route('/:dishId/comments/:commentId')
                 }, (err) => next(err))
                 .catch(err => next(err))
         })
-        .post((req, res, next) => {
+        .post(authenticate.verifyUser, (req, res, next) => {
             res.end('POST operation not supported on /dishes' + req.params.dishId
                 + '/comments/' + req.params.commentId );
         })
-        .put((req, res, next) => {
+        .put(authenticate.verifyUser, (req, res, next) => {
             Dishes.findById(req.params.dishId)
                 .then(dish => {
                     if (dish !== null && dish.comments.id(req.params.commentId) !== null) {
@@ -197,7 +200,7 @@ dishRouter.route('/:dishId/comments/:commentId')
                 }, (err) => next(err))
                 .catch(err => next(err))
         })
-        .delete((req, res, next) => {
+        .delete(authenticate.verifyUser, (req, res, next) => {
             Dishes.findByIdAndRemove(req.params.dishId)
                 .then((dish) => {
                     if (dish !== null && dish.comments.id(req.params.commentId) !== null) {

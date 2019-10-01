@@ -6,15 +6,14 @@ const passportLocalMongoose = require('passport-local-mongoose');
 // username과 password을 지워도 된다
 
 const User = new Schema({
-    // username: {
-    //     type: String,
-    //     required: true,
-    //     unique: true
-    // },
-    // password: {
-    //     type: String,
-    //     required: true
-    // },
+    firstname: {
+        type: String,
+        default: ''
+    },
+    lastname: {
+        type: String,
+        default: ''
+    },
     admin: {
         type: Boolean,
         default: false

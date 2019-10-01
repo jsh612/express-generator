@@ -31,7 +31,22 @@ router.post('/signup', (req, res, next) => {
         res.json({err: err});
       }
       else {
-        console.log("passport.authenticate() 출력괎", passport.authenticate('local'));//authenticate 함수 출력
+        if (req.body.firstname) {
+          user.firstname = req.body.firstname;
+        } 
+        if (req.body.lastname) {
+          user.lastname = req.body.lastname;
+        } 
+        //위의 추가 사항을 저장해준다.
+        user.save((err, user) => {
+          if (err) {
+            res.statusCode = 500;
+            res.setHeader('Content-type', 'application/json');
+            res.json({err: err});
+            return;
+          }
+        })
+        // console.log("passport.authenticate() 출력괎", passport.authenticate('local'));//authenticate 함수 출력
 
         //아라와 같은 문법은 passport에서 요구하는 것이다.
         passport.authenticate('local')(req, res, () => {
@@ -39,8 +54,8 @@ router.post('/signup', (req, res, next) => {
           res.setHeader('Content-type', 'application/json');
           res.json({success: true, status: 'Registration Successful'});
         })
-      }
-  })
+       }
+  });
 });
 
 
@@ -102,7 +117,6 @@ router.get('/logout', (req, res, next) => {
 
 
 module.exports = router;
-
 
 
 

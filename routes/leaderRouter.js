@@ -22,7 +22,7 @@ leaderRoute.route('/')
             //에러는 나중에 한번에 처리하기위해 next로 넘긴다.
             //app.js 의 마지막 부분의 error handler에서 처리함.
     })
-    .post(authenticate.verifyUser, (req, res, next) => {
+    .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
         Leaders.create(req.body)
             .then(leader => {
                 console.log('Dish created', leader);
@@ -32,11 +32,11 @@ leaderRoute.route('/')
             }, (err) => next(err))
             .catch(err => next(err))
     })
-    .put(authenticate.verifyUser, (req, res, next) => {
+    .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
         res.statusCode = 403;
         res.end('PUT operation not supported here.');
     })
-    .delete(authenticate.verifyUser, (req, res, next) => {
+    .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
         Leaders.remove({})
             .then((response) => {
                 res.statusCode = 200;
@@ -57,10 +57,10 @@ leaderRoute.route('/:leaderId')
                 }, (err) => next(err))
                 .catch(err => next(err))
         })
-        .post(authenticate.verifyUser, (req, res, next) => {
+        .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
             res.end('POST operation not supported on /leaderes.');
         })
-        .put(authenticate.verifyUser, (req, res, next) => {
+        .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
             Leaders.findByIdAndUpdate(req.params.leaderId, {
                 $set: req.body
             }, {new: true})
@@ -71,7 +71,7 @@ leaderRoute.route('/:leaderId')
                 }, (err) => next(err))
                 .catch(err => next(err))
         })
-        .delete(authenticate.verifyUser, (req, res, next) => {
+        .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
             Leaders.findByIdAndRemove(req.params.leaderId)
                 .then((response) => {
                     res.statusCode = 200;

@@ -21,7 +21,7 @@ dishRouter.route('/')
             .catch(err => next(err))
     })
     //authenticate.verifyUser 미들웨어는 인증을 요구를 적용 한것.
-    .post(authenticate.verifyUser ,(req, res, next) => {
+    .post(authenticate.verifyUser , authenticate.verifyAdmin, (req, res, next) => {
         console.log('인증확인')
         Dishes.create(req.body)
             .then(dish => {
@@ -32,11 +32,11 @@ dishRouter.route('/')
             }, (err) => next(err))
             .catch(err => next(err))
     })
-    .put(authenticate.verifyUser, (req, res, next) => {
+    .put(authenticate.verifyUser,authenticate.verifyAdmin, (req, res, next) => {
         res.statusCode = 403;
         res.end('PUT operation not supported here.');
     })
-    .delete(authenticate.verifyUser, (req, res, next) => {
+    .delete(authenticate.verifyUser,authenticate.verifyAdmin, (req, res, next) => {
         Dishes.remove({})
             .then((response) => {
                 res.statusCode = 200;
@@ -135,7 +135,7 @@ dishRouter.route('/:dishId/comments')
         res.end('PUT operation not supported here.'
             + req.params.dishId + '/comments');
     })
-    .delete(authenticate.verifyUser, (req, res, next) => {
+    .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
         Dishes.findById(req.params.dishId)
             .then((dish) => {
                 if (dish !== null) {

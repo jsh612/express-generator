@@ -4,6 +4,7 @@
 //and then we will export this from this file because this is going to be a node module
 
 const passport = require('passport');
+
 const LocalStrategy = require('passport-local').Strategy
 const User = require('./models/user');
 
@@ -98,3 +99,10 @@ exports.jwtPassport = passport.use(new JwtStrategy(opts,
 
 // using this to verify an incoming user
 exports.verifyUser = passport.authenticate('jwt', {session: false}); // 세션은 생성하지 않는다.
+exports.verifyAdmin = (req, res, next) => {
+    if (res.user.admin) {
+        next()
+    } else {
+        next(err)
+    }
+}

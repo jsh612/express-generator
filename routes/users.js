@@ -10,7 +10,13 @@ router.use(bodyParser.json());
 
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
+router.get('/', authenticate.verifyUser, authenticate.verifyAdmin, function(req, res, next) {
+  Users.find({})
+    .then(user => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json(user)
+    })
   res.send('respond with a resource');
 });
 

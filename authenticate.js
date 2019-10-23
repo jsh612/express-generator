@@ -90,7 +90,7 @@ exports.jwtPassport = passport.use(
 // using this to verify an incoming user
 exports.verifyUser = passport.authenticate("jwt", { session: false }); // 세션은 생성하지 않는다.
 exports.verifyAdmin = (req, res, next) => {
-  if (res.user.admin) {
+  if (req.user.admin) {
     next();
   } else {
     const err = new Error("You are not authorized to perform this operation!");

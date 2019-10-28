@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const authenticate = require("../authenticate");
+const cors = require("./cors");
 
 const Dishes = require("../models/dishes");
 
@@ -11,7 +12,11 @@ dishRouter.use(bodyParser.json());
 
 dishRouter
   .route("/")
-  .get((req, res, next) => {
+  .options(cors.corsWithOptions, (req, res) => {
+    // 클라이언트는 preflight에 옵션을 포함시켜 보낼것이다. 이를 처리하기위해 작성.
+    res.sendStatus(200);
+  })
+  .get(cors.cors, (req, res, next) => {
     Dishes.find({})
       .populate("comments.author")
       .then(
@@ -25,25 +30,36 @@ dishRouter
       .catch(err => next(err));
   })
   //authenticate.verifyUser 미들웨어는 인증을 요구를 적용 한것.
-  .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
-    console.log("인증확인");
-    Dishes.create(req.body)
-      .then(
-        dish => {
-          console.log("Dish created", dish);
-          res.statusCode = 200;
-          res.setHeader("Content-Type", "application/json");
-          res.json(dish);
-        },
-        err => next(err)
-      )
-      .catch(err => next(err));
-  })
-  .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
-    res.statusCode = 403;
-    res.end("PUT operation not supported here.");
-  })
+  .post(
+    cors.corsWithOptions,
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (req, res, next) => {
+      console.log("인증확인");
+      Dishes.create(req.body)
+        .then(
+          dish => {
+            console.log("Dish created", dish);
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "application/json");
+            res.json(dish);
+          },
+          err => next(err)
+        )
+        .catch(err => next(err));
+    }
+  )
+  .put(
+    cors.corsWithOptions,
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (req, res, next) => {
+      res.statusCode = 403;
+      res.end("PUT operation not supported here.");
+    }
+  )
   .delete(
+    cors.corsWithOptions,
     authenticate.verifyUser,
     authenticate.verifyAdmin,
     (req, res, next) => {
@@ -62,7 +78,11 @@ dishRouter
 
 dishRouter
   .route("/:dishId")
-  .get((req, res, next) => {
+  .options(cors.corsWithOptions, (req, res) => {
+    // 클라이언트는 preflight에 옵션을 포함시켜 보낼것이다. 이름 처리하기위해 작성.
+    res.sendStatus(200);
+  })
+  .get(cors.cors, (req, res, next) => {
     Dishes.findById(req.params.dishId)
       .populate("comments.author")
       .then(
@@ -75,10 +95,10 @@ dishRouter
       )
       .catch(err => next(err));
   })
-  .post(authenticate.verifyUser, (req, res, next) => {
+  .post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     res.end("POST operation not supported on /dishes.");
   })
-  .put(authenticate.verifyUser, (req, res, next) => {
+  .put(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     Dishes.findByIdAndUpdate(
       req.params.dishId,
       {
@@ -96,7 +116,7 @@ dishRouter
       )
       .catch(err => next(err));
   })
-  .delete(authenticate.verifyUser, (req, res, next) => {
+  .delete(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     Dishes.findByIdAndRemove(req.params.dishId)
       .then(
         response => {
@@ -111,7 +131,11 @@ dishRouter
 
 dishRouter
   .route("/:dishId/comments")
-  .get((req, res, next) => {
+  .options(cors.corsWithOptions, (req, res) => {
+    // 클라이언트는 preflight에 옵션을 포함시켜 보낼것이다. 이름 처리하기위해 작성.
+    res.sendStatus(200);
+  })
+  .get(cors.cors, (req, res, next) => {
     Dishes.findById(req.params.dishId)
       .populate("comments.author")
       .then(
@@ -132,7 +156,7 @@ dishRouter
     //에러는 나중에 한번에 처리하기위해 next로 넘긴다.
     //app.js 의 마지막 부분의 error handler에서 처리함.
   })
-  .post(authenticate.verifyUser, (req, res, next) => {
+  .post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     Dishes.findById(req.params.dishId)
       .then(
         dish => {
@@ -166,13 +190,14 @@ dishRouter
       )
       .catch(err => next(err));
   })
-  .put(authenticate.verifyUser, (req, res, next) => {
+  .put(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
     res.end(
       "PUT operation not supported here." + req.params.dishId + "/comments"
     );
   })
   .delete(
+    cors.corsWithOptions,
     authenticate.verifyUser,
     authenticate.verifyAdmin,
     (req, res, next) => {
@@ -209,7 +234,11 @@ dishRouter
 
 dishRouter
   .route("/:dishId/comments/:commentId")
-  .get((req, res, next) => {
+  .options(cors.corsWithOptions, (req, res) => {
+    // 클라이언트는 preflight에 옵션을 포함시켜 보낼것이다. 이름 처리하기위해 작성.
+    res.sendStatus(200);
+  })
+  .get(cors.cors, (req, res, next) => {
     Dishes.findById(req.params.dishId)
       .populate("comments.author")
       .then(
@@ -235,7 +264,7 @@ dishRouter
       )
       .catch(err => next(err));
   })
-  .post(authenticate.verifyUser, (req, res, next) => {
+  .post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     res.end(
       "POST operation not supported on /dishes" +
         req.params.dishId +
@@ -243,7 +272,7 @@ dishRouter
         req.params.commentId
     );
   })
-  .put(authenticate.verifyUser, (req, res, next) => {
+  .put(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     Dishes.findById(req.params.dishId)
       .then(
         dish => {
@@ -302,7 +331,7 @@ dishRouter
       )
       .catch(err => next(err));
   })
-  .delete(authenticate.verifyUser, (req, res, next) => {
+  .delete(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     Dishes.findByIdAndRemove(req.params.dishId)
       .then(
         dish => {

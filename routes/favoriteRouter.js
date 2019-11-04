@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const authenticate = require("../authenticate");
 const cors = require("./cors");
 
-const Favorites = require("../models/favorites");
+const Favorites = require("../models/favorite");
 
 const favoriteRouter = express.Router();
 
@@ -36,8 +36,7 @@ favoriteRouter
     cors.corsWithOptions,
     authenticate.verifyUser,
     async (req, res, next) => {
-      const favorite = await Favorites.findOne({ user: req.user.id });
-      Favorites.remove({})
+      Favorites.findOneAndRemove({ user: req.user.id })
         .then(
           response => {
             res.statusCode = 200;
